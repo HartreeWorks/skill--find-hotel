@@ -43,7 +43,10 @@ ambiguous, ask before searching.
 
 **Quality floor.** Exclude properties scoring below 8.0 ("Very good") on
 Booking.com's guest review score; rank the rest on price and preference fit.
-Note the score in the recommendation.
+Note the score in the recommendation. Apply Booking.com's built-in review-score
+facet rather than scrolling past low-rated results — tick "Very good: 8+" (or
+"Superb: 9+" when there is plenty of choice), or append `nflt=review_score%3D80`
+(8+; use `90` for 9+) to the search URL.
 
 **Guests / rooms.** Default 1 adult, 1 room, no children unless stated.
 
@@ -98,7 +101,7 @@ Open Booking.com signed in. Either use the search box or go straight to a search
 URL:
 
 ```text
-https://www.booking.com/searchresults.html?ss=HOTEL+OR+AREA&checkin=YYYY-MM-DD&checkout=YYYY-MM-DD&group_adults=1&no_rooms=1&group_children=0
+https://www.booking.com/searchresults.html?ss=HOTEL+OR+AREA&checkin=YYYY-MM-DD&checkout=YYYY-MM-DD&group_adults=1&no_rooms=1&group_children=0&nflt=review_score%3D80
 ```
 
 For a named hotel, open its property page directly and apply the
