@@ -24,6 +24,26 @@ the default for consolidated management and Genius perks, but it is not always
 cheapest — book wherever the same room+rate is cheaper and available, surfacing
 the delta rather than silently defaulting to Booking.com.
 
+**Hilton properties — prefer hilton.com, and use the Honors rate.** This applies
+to **Hilton-family brands only** (Hilton, Hampton by Hilton, DoubleTree, Hilton
+Garden Inn, Curio, Canopy, Waldorf Astoria, Conrad, Embassy Suites, Tru,
+Motto, Signia, LXR, Tempo, Home2 Suites, Homewood Suites). Peter holds a Hilton
+Honors membership and wants the Honors member rate quoted and used.
+
+- Quote the **Honors Discount** rate, not just the public rate. On hilton.com's
+  "Select a Rate" step, each rate shows a public price and an Honors Discount
+  price side by side; capture both.
+- **Book direct when the Honors rate is cheaper than *or equal to* Booking.com.**
+  Direct also earns Honors points and stay credit, which an OTA booking does not,
+  so parity is enough to justify booking direct — a strict discount is not needed.
+- Only fall back to Booking.com when it is genuinely cheaper than the Honors rate.
+- Peter should already be signed in to hilton.com. **If hilton.com is signed out,
+  do not sign in** (see hard limits) — surface the public rates, note that the
+  Honors rate is likely lower, and hand off to Peter to sign in.
+
+For **other chains** (Marriott, IHG, Accor, etc.), Peter has no loyalty status, so
+apply the plain default above: compare openly bookable rates and pick the cheaper.
+
 **Booking.com availability quirk.** Booking.com's *search-results* page
 sometimes wrongly reports a property as "Unavailable on our site for your
 selected dates" when the property *page* actually has rooms. Before concluding a
@@ -89,6 +109,19 @@ These are hard limits, regardless of how the task is phrased:
 
 ## Workflow
 
+### Step 0: Model check
+
+Check which model is running (stated in the system prompt's environment
+block). If it is a Mythos-class model (Fable), pause before searching and
+tell Peter this task does not need that tier. Offer:
+
+1. Continue on the current model.
+2. Delegate the whole workflow to a subagent on a cheaper model (Agent tool
+   with `model: "sonnet"`; subagents share the session's browser tools).
+3. He relaunches the session on a cheaper model (`/model`).
+
+Wait for his choice. On Opus, Sonnet, or Haiku, skip this step and proceed.
+
 ### Step 1: Confirm inputs if needed
 
 Confirm destination (airport vs city), check-in and check-out dates (derive
@@ -104,6 +137,19 @@ URL:
 https://www.booking.com/searchresults.html?ss=HOTEL+OR+AREA&checkin=YYYY-MM-DD&checkout=YYYY-MM-DD&group_adults=1&no_rooms=1&group_children=0&nflt=review_score%3D80
 ```
 
+For an area search, sweep the area in two passes before shortlisting. A
+single price-sorted results page misses mid-priced properties.
+
+1. **List view, pages 1–3.** Read every result on the first three pages
+   (about 25 per page; use the pager or add `&offset=25`, then `&offset=50`).
+   The pass is done when page 3 has been read or the results run out.
+2. **Map view, zoomed to the target.** Tick "Only show available properties"
+   first (`nflt=oos%3D1` in the URL), then open the map and zoom in on the
+   exact target (the office or address, not the district name) until the
+   pins span the acceptable walking radius. Pan until the whole radius is
+   covered, and read the name and price of every pin. The pass is done when
+   every pin inside the radius is on the candidate list or ruled out.
+
 For a named hotel, open its property page directly and apply the
 availability-quirk check above if it shows unavailable. Read the room/rate table
 ("I'll reserve" / availability section) and capture, per rate: price (total and
@@ -114,9 +160,13 @@ breakfast.
 
 Search the hotel's own or chain site for the same room, dates, and guests.
 Capture the equivalent non-refundable and flexible rates. Watch for currency
-differences (convert to compare like-for-like) and Honors/loyalty rates that
-require a login — do not log in to obtain them; compare only the openly bookable
-rates.
+differences (convert to compare like-for-like).
+
+**Loyalty rates.** For **Hilton-family properties**, capture the Honors Discount
+rate as well as the public rate and apply the Hilton rule in Booking preferences
+above (book direct at parity or better). For every other chain, compare only the
+openly bookable rates. Never sign in to obtain a loyalty rate — if the site is
+logged out, report the public rates and hand off.
 
 ### Step 4: Present and decide
 
@@ -126,9 +176,17 @@ Present the recommendation in this format:
 **HOTEL — CITY/AIRPORT · check-in DD Mon → check-out DD Mon (N night/s) · G guest/s**
 Recommended (non-refundable): [site] [room] — [CUR price] (incl. taxes; breakfast Y/N)
 Flexible delta: [+CUR X for free cancellation until DD Mon — taken if <£10, else noted]
-Cheaper site: [Booking.com vs direct delta, if any]
+Cheaper site: [Booking.com vs direct delta, if any; for Hilton, quote the Honors rate]
 Notes: [location/transfer, score, A/C confirmed, anything material]
+Links: [Booking.com property page with dates] · [direct site, if checked]
 ```
+
+**Links are mandatory.** Every hotel named in a recommendation, shortlist, or
+written report carries a Markdown link to its Booking.com property page with
+the stay's dates and rooms in the query string
+(`https://www.booking.com/hotel/gb/SLUG.en-gb.html?checkin=YYYY-MM-DD&checkout=YYYY-MM-DD&group_adults=N&no_rooms=N`),
+plus a link to the direct-site page whenever it was cross-checked. Peter
+should be able to open any option from the report without searching again.
 
 Apply the rate-type rule above (non-refundable unless flexible costs <£10 more),
 then drive the chosen booking up to the payment step and **hand off** for Peter
