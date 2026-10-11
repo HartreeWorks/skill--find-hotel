@@ -2,7 +2,7 @@
 
 A skill for finding a well-rated hotel near a specific address and getting the best price on it, without spending an evening clicking through Booking.com.
 
-Your agent sweeps Booking.com (three pages of results plus a zoomed map view of the target area), applies your quality floor and must-haves, cross-checks the top options on the hotel's own site (including Hilton Honors rates), and then takes the booking you choose up to the payment step. You enter card details yourself.
+Your agent sweeps Booking.com (three pages of results plus a zoomed map view of the target area), applies your quality floor and must-haves, reads recent reviews on the shortlist for noise, Wi-Fi and gym quality, cross-checks the top options on the hotel's own site (including Hilton Honors rates), and then takes the booking you choose up to the payment step. You enter card details yourself.
 
 ## Requirements
 

@@ -59,7 +59,9 @@ non-refundable one; otherwise book non-refundable without asking.
 **Location.** For an airport stopover, in-terminal or within walking distance is
 the most desirable (a covered walkway is not important). A short shuttle is
 acceptable but second-best. For a city stay, prefer central. If the area is
-ambiguous, ask before searching.
+ambiguous, ask before searching. Every walking, cycling or transit time in the
+report comes from the **find-route** skill (hotel address to target), not from
+Booking.com's "distance from centre" or an estimate.
 
 **Quality floor.** Exclude properties scoring below 8.0 ("Very good") on
 Booking.com's guest review score; rank the rest on price and preference fit.
@@ -88,7 +90,9 @@ description or photos rather than excluding properties a filter doesn't tag. A
 gym/fitness centre is highly desirable whenever
 the stay leaves time to use it (i.e. not a late-arrival/early-departure
 stopover) — weight it as a strong plus, but never let its absence rule out an
-otherwise-good option.
+otherwise-good option. The best gyms have dumbbells, ideally also a barbell or
+rack for deadlifting. A good sauna is also a strong plus. Amenity listings rarely
+show either, so judge them from reviews (Step 4).
 
 **Breakfast / extras.** Note when breakfast is included (Hampton/Hilton family
 usually includes it). Do not add parking, upgrades, or paid extras unless asked.
@@ -168,7 +172,22 @@ above (book direct at parity or better). For every other chain, compare only the
 openly bookable rates. Never sign in to obtain a loyalty rate — if the site is
 logged out, report the public rates and hand off.
 
-### Step 4: Present and decide
+### Step 4: Read reviews for the shortlist
+
+Structured listings miss what guests notice. For every hotel on the shortlist,
+read recent reviews on Booking.com (the property page's guest reviews,
+including the Wi-Fi sub-score) and on the property's Google Maps listing. Look
+for evidence that should move a hotel up or down the ranking:
+
+- **Deal-breakers:** noise (street, nightlife, trains, thin walls, a rattling
+  A/C unit), weak or dropping Wi-Fi, broken A/C, building works.
+- **Hidden pluses:** the gym's equipment and a good sauna (see Amenities).
+
+The step is done when each shortlisted hotel has a one-line review note that
+cites what reviews said (or "no mentions of noise/Wi-Fi") and every hotel the
+reviews rule out has been dropped or flagged.
+
+### Step 5: Present and decide
 
 Present the recommendation in this format:
 
@@ -178,6 +197,7 @@ Recommended (non-refundable): [site] [room] — [CUR price] (incl. taxes; breakf
 Flexible delta: [+CUR X for free cancellation until DD Mon — taken if <£10, else noted]
 Cheaper site: [Booking.com vs direct delta, if any; for Hilton, quote the Honors rate]
 Notes: [location/transfer, score, A/C confirmed, anything material]
+Reviews: [noise, Wi-Fi, gym equipment, sauna — from Booking.com and Google Maps]
 Links: [Booking.com property page with dates] · [direct site, if checked]
 ```
 
@@ -192,7 +212,7 @@ Apply the rate-type rule above (non-refundable unless flexible costs <£10 more)
 then drive the chosen booking up to the payment step and **hand off** for Peter
 to pay (see hard limits above).
 
-### Step 5: Record
+### Step 6: Record
 
 After Peter confirms the booking is done, update the relevant trip file (e.g.
 `work/flights/*.md` for a flight trip, or the trip's own work file) with the
