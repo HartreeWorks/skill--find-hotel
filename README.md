@@ -1,13 +1,30 @@
 # Find hotel
 
-A skill for finding a well-rated hotel near a specific address and getting the best price on it, without spending an evening clicking through Booking.com.
+A skill for finding the hotel you would have picked yourself (best-rated, best-designed and good value) without spending an evening clicking through Booking.com.
 
-Your agent sweeps Booking.com (three pages of results plus a zoomed map view of the target area), applies your quality floor and must-haves, reads recent reviews on the shortlist for noise, Wi-Fi and gym quality, cross-checks the top options on the hotel's own site (including Hilton Honors rates), and then takes the booking you choose up to the payment step. You enter card details yourself.
+Your agent starts from your favourite hotels in the city and prices them for your dates. It then sweeps Booking.com for better-rated alternatives within your price band. For each contender it:
+
+- grades the room design and the desk from the photos, against your taste;
+- checks the gym for free weights;
+- reads recent Booking.com and Google Maps reviews for noise and Wi-Fi;
+- gets journey times to the places you need to reach.
+
+It cross-checks the top options on the hotel's own site, including loyalty rates, and takes the booking you choose up to the payment step. You enter card details yourself.
+
+## Your preferences and favourites
+
+On first run the skill asks a few questions: your booking accounts and loyalty programmes, your rate type, the review score you expect, your must-haves, how you get around cities, and two or three hotels you have loved. It looks at the photos of those hotels to write a description of your room taste, and saves everything to its `data/` folder:
+
+- `data/preferences.md`: your rules, taste, price guidance and city-specific area rules (for example "anywhere within 20 minutes' cycle in central London").
+- `data/favourites.json`: hotels you like, by city. After each booking the skill offers to add the hotel, so every search in that city starts from your list.
+
+Edit either file at any time. Starter versions are in `examples/`.
 
 ## Requirements
 
 - An agent that can drive your web browser (for example Claude Code with the Claude in Chrome extension).
-- A Booking.com account, signed in in that browser. Optional: a Hilton Honors account, signed in on hilton.com.
+- A Booking.com account, signed in in that browser. Optional: loyalty accounts (such as Hilton Honors) signed in on the chain's site.
+- Optional: the [find-route](https://github.com/HartreeWorks/skill--find-route) skill, for journey times.
 
 The skill never enters payment details, creates accounts or signs in for you.
 
@@ -28,12 +45,10 @@ If you get "command not found", [install Node](https://github.com/HartreeWorks/s
 Ask your agent:
 
 ```text
-Find me a hotel within 20 minutes' walk of King's Cross station, London, from Thursday 12 to Monday 16 November. I need a desk in the room and a review score of 8.5 or more.
+Find me a hotel in central London for Saturday 14 November, around £200–300. I'll be at an event near London Bridge in the evening.
 ```
 
-You get a shortlist with prices, walking times, review scores and cancellation terms, each linked to its Booking.com page with your dates filled in, plus a recommendation and the direct-site price for the top options.
-
-Edit the preferences in [SKILL.md](./SKILL.md) (rate type, amenities, loyalty programmes) to match your own.
+You get a short table comparing your favourites with the best alternatives the sweep found. Each row has the review score, design grade, desk and gym verdicts, non-refundable and flexible prices, journey times and a one-line review note, all linked to Booking.com with your dates filled in. A recommendation comes first.
 
 ## Documentation
 

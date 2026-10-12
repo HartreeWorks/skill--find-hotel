@@ -1,0 +1,13 @@
+{
+  "City name": [
+    {
+      "name": "Example Hotel",
+      "booking_url": "https://www.booking.com/hotel/gb/example-hotel.en-gb.html",
+      "address": "Street, postcode (optional)",
+      "area": "Neighbourhood (nearest station)",
+      "score": "8.7 (Comfort 9.0), checked YYYY-MM-DD",
+      "status": "stayed | booked | shortlisted",
+      "verdict": "What you liked or disliked, and what you paid."
+    }
+  ]
+}
