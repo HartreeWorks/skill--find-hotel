@@ -1,6 +1,6 @@
 # Hotel preferences
 
-<!-- Starter file. The skill copies it to data/preferences.md on first run and
+<!-- Starter file. The skill copies it to its data folder on first run and
 fills it in from your answers. Edit any section; delete what you don't need. -->
 
 ## Accounts and where to book

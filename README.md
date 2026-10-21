@@ -1,5 +1,13 @@
 # Find hotel
 
+> **Updating (for agents).** If you were asked to update this skill, follow these steps exactly, in order. A plain `npx skills update` deletes the installed skill folder, and copies installed before October 2026 keep the user's preferences inside it, in `data/`.
+>
+> 1. Find every installed copy: folders named `find-hotel` under `~/.agents/skills/`, `~/.claude/skills/`, `~/.codex/skills/` and the project's `.claude/skills/` or `.agents/skills/`.
+> 2. If an installed copy has `scripts/check-update.sh`, run `bash scripts/check-update.sh --apply` from the project folder and stop here: it handles migration and the update itself.
+> 3. Otherwise, download this repository to a temporary folder (`git clone --depth 1 https://github.com/HartreeWorks/skill--find-hotel`) and, for each installed copy that has a `data/` folder, run `bash <temporary folder>/scripts/migrate.sh --from <installed copy>`. It backs up the data, copies it to `~/.config/hartreeworks-skills/find-hotel/`, verifies the copy and stops on conflicts. Do not continue until every copy reports "Migrated" or "Nothing to migrate"; show the user any conflict.
+> 4. Install the latest release, giving the scope explicitly: `npx -y skills@1.7.4 add HartreeWorks/skill--find-hotel#v$(cat <temporary folder>/VERSION) --skill find-hotel -g -y` for a global copy, and the same without `-g`, run from the project folder, for a project copy.
+> 5. Confirm `~/.config/hartreeworks-skills/find-hotel/` holds the user's files, then tell the user what changed (`CHANGES.md`).
+
 A skill for finding the hotel you would have picked yourself (best-rated, best-designed and good value) without spending an evening clicking through Booking.com.
 
 Your agent starts from your favourite hotels in the city and prices them for your dates. It then sweeps Booking.com for better-rated alternatives within your price band. For each contender it:
@@ -14,12 +22,16 @@ It cross-checks the top options on the hotel's own site, including loyalty rates
 
 ## Your preferences and favourites
 
-On first run the skill asks a few questions: your booking accounts and loyalty programmes, your rate type, the review score you expect, your must-haves, how you get around cities, and two or three hotels you have loved. It looks at the photos of those hotels to write a description of your room taste, and saves everything to its `data/` folder:
+On first run the skill asks a few questions: your booking accounts and loyalty programmes, your rate type, the review score you expect, your must-haves, how you get around cities, and two or three hotels you have loved. It looks at the photos of those hotels to write a description of your room taste, and saves everything to `~/.config/hartreeworks-skills/find-hotel/`, outside the skill folder, so updates never touch it:
 
-- `data/preferences.md`: your rules, taste, price guidance and city-specific area rules (for example "anywhere within 20 minutes' cycle in central London").
-- `data/favourites.json`: hotels you like, by city. After each booking the skill offers to add the hotel, so every search in that city starts from your list.
+- `preferences.md`: your rules, taste, price guidance and city-specific area rules (for example "anywhere within 20 minutes' cycle in central London").
+- `favourites.json`: hotels you like, by city. After each booking the skill offers to add the hotel, so every search in that city starts from your list.
 
 Edit either file at any time. Starter versions are in `examples/`.
+
+## Updates
+
+At most once a day, the skill checks for a new release. When there is one, your agent shows what changed and asks whether to update now, update now and automatically from now on, or not now.
 
 ## Requirements
 

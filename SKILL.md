@@ -16,14 +16,18 @@ description: >
 Find the best hotel for the user's dates (best-rated, best-designed and best
 value) and drive the reservation up to, never through, payment.
 
-The user's own preferences live in two files in this skill's `data/` folder:
+The user's own preferences live in two files in the **data folder**, which
+sits outside this skill's folder so that updates never touch it. Get its path
+with `bash scripts/data-dir.sh` (normally
+`~/.config/hartreeworks-skills/find-hotel/`); if that script does not exist,
+the data folder is `data/` in this skill's folder.
 
-- `data/preferences.md`: booking accounts, loyalty programmes, rate rules,
+- `preferences.md`: booking accounts, loyalty programmes, rate rules,
   score bar, must-haves, room taste, price guidance, area rules and where to
   record bookings.
-- `data/favourites.json`: hotels the user likes, by city, with their verdicts.
+- `favourites.json`: hotels the user likes, by city, with their verdicts.
 
-Where this file and `data/preferences.md` differ, the preferences file wins.
+Where this file and `preferences.md` differ, the preferences file wins.
 
 ## What this skill must never do
 
@@ -40,6 +44,21 @@ These are hard limits, regardless of how the task is phrased:
 
 ## Workflow
 
+### Before starting: check for updates
+
+If `scripts/check-update.sh` exists, run `bash scripts/check-update.sh` from
+the project folder. It checks at most once a day and prints nothing when the
+skill is current.
+
+- **It reports an update:** show the user the changes and ask whether to
+  update now, update now and automatically from now on, or not now. For the
+  first run `bash scripts/check-update.sh --apply`; for the second run it with
+  `--enable-auto` first, then `--apply`; for the third carry on.
+- **It updated itself, or `--apply` succeeded:** re-read this SKILL.md before
+  continuing.
+- **It reports a migration conflict:** show the user the conflicting files
+  and wait for them to choose which version to keep.
+
 ### Step 0: Model check
 
 Check which model is running (stated in the system prompt's environment
@@ -55,13 +74,13 @@ Wait for their choice. On Opus, Sonnet, or Haiku, skip this step and proceed.
 
 ### Step 1: Load preferences (first run: set them up)
 
-Read `data/preferences.md` and `data/favourites.json`.
+Read `preferences.md` and `favourites.json` in the data folder.
 
-If `data/preferences.md` does not exist, this is the first run. Tell the user
+If `preferences.md` does not exist, this is the first run. Tell the user
 the skill works best with their preferences, then set them up:
 
-1. Copy `examples/preferences.md` to `data/preferences.md`, and create
-   `data/favourites.json` as `{}`. `examples/favourites.json` shows the
+1. Copy `examples/preferences.md` into the data folder, and create
+   `favourites.json` there as `{}`. `examples/favourites.json` shows the
    entry format.
 2. Ask, in one message: which booking sites they are signed in to and which
    loyalty programmes they hold; non-refundable or flexible by default; their
@@ -69,8 +88,8 @@ the skill works best with their preferences, then set them up:
    (walk, cycle, public transport); how easily noise keeps them awake; and
    two or three hotels they have loved, as links.
 3. Open the photo galleries of the hotels they named and write the room-taste
-   section from what those hotels share. Add them to `data/favourites.json`.
-4. Replace the example content in `data/preferences.md` with their answers and
+   section from what those hotels share. Add them to `favourites.json`.
+4. Replace the example content in `preferences.md` with their answers and
    show them the result.
 
 If they would rather skip setup, search with the example file's defaults and
@@ -95,7 +114,7 @@ airport stopover, central for a city stay. If the area is ambiguous, ask.
 
 ### Step 3: Price the favourites
 
-Look up the city in `data/favourites.json`. Open each favourite's Booking.com
+Look up the city in `favourites.json`. Open each favourite's Booking.com
 page with the dates and capture its cheapest suitable room and rates. These
 are the benchmark: the sweep has to find hotels that match or beat them.
 
@@ -301,7 +320,7 @@ After the user confirms the booking:
 1. Record it where the preferences say (for example the trip's itinerary
    file): hotel, dates, room, rate type, price and reference.
 2. Offer to add the booked hotel, and any runner-up the user liked, to
-   `data/favourites.json` for that city, so the next search there starts with
+   `favourites.json` for that city, so the next search there starts with
    them. Fill in its `quiet` field with the noise result (reviews with text
    read, complaints, chance above the threshold, estimator version). Add a
    verdict once the user has stayed.
