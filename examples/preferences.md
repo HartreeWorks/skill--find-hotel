@@ -26,6 +26,12 @@ Non-refundable by default. Take the flexible rate only when it costs less than Â
 - A desk you can work at.
 - Air conditioning.
 
+## Quiet
+
+- **Threshold:** 7.5% of reviews with text complaining of noise (`--threshold 0.075`): flags roughly the noisiest 40% of London hotels rated 8+. Light sleepers might use 6.5% (flags about 60%); heavy sleepers 8.5% (about 30%).
+- **Hard disqualifiers:** in the last 12 months, a guest who moved rooms or left because of noise.
+- **Building type:** prefer purpose-built hotels over converted old houses at similar noise results.
+
 ## Strong pluses
 
 - A gym (best with free weights).

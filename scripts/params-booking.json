@@ -1,0 +1,12 @@
+{
+ "version": "booking-london-2026-10-18",
+ "source": "Booking.com, random London hotels rated 8+",
+ "half_life_years": 6.6,
+ "a": 111.72627628059765,
+ "b0": -2.521865448034425,
+ "bq": 0.0,
+ "quiet_centre": 0.10169849528111098,
+ "threshold": 0.075,
+ "threshold_percentile": 0.55,
+ "method": "beta-binomial marginal likelihood across hotels"
+}

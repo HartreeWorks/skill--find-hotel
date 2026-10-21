@@ -6,7 +6,8 @@ Your agent starts from your favourite hotels in the city and prices them for you
 
 - grades the room design and the desk from the photos, against your taste;
 - checks the gym for free weights;
-- reads recent Booking.com and Google Maps reviews for noise and Wi-Fi;
+- reads the 100 newest Booking.com reviews in full, labels every noise complaint, and estimates the chance the hotel is noisier than your threshold;
+- skims Google Maps reviews for Wi-Fi, broken air conditioning and other deal-breakers;
 - gets journey times to the places you need to reach.
 
 It cross-checks the top options on the hotel's own site, including loyalty rates, and takes the booking you choose up to the payment step. You enter card details yourself.
@@ -24,6 +25,7 @@ Edit either file at any time. Starter versions are in `examples/`.
 
 - An agent that can drive your web browser (for example Claude Code with the Claude in Chrome extension).
 - A Booking.com account, signed in in that browser. Optional: loyalty accounts (such as Hilton Honors) signed in on the chain's site.
+- [uv](https://docs.astral.sh/uv/), to run the noise estimator.
 - Optional: the [find-route](https://github.com/HartreeWorks/skill--find-route) skill, for journey times.
 
 The skill never enters payment details, creates accounts or signs in for you.

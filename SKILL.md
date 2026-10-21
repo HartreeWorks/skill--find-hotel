@@ -5,8 +5,8 @@ description: >
   hotel", "search hotels", "find a room", "find somewhere to stay" near an
   airport or in a city, or to book accommodation alongside a flight or train.
   It starts from the user's favourite hotels, sweeps Booking.com for
-  better-rated alternatives, grades room design and desk from photos, reads
-  reviews, cross-checks the direct site, and drives a reservation up to the
+  better-rated alternatives, grades room design and desk from photos, screens
+  recent reviews for noise, cross-checks the direct site, and drives a reservation up to the
   payment step. Default to hotels; for Airbnb / short-term rentals use
   find-airbnb.
 ---
@@ -66,8 +66,8 @@ the skill works best with their preferences, then set them up:
 2. Ask, in one message: which booking sites they are signed in to and which
    loyalty programmes they hold; non-refundable or flexible by default; their
    minimum review score; must-have amenities; how they get around cities
-   (walk, cycle, public transport); and two or three hotels they have loved,
-   as links.
+   (walk, cycle, public transport); how easily noise keeps them awake; and
+   two or three hotels they have loved, as links.
 3. Open the photo galleries of the hotels they named and write the room-taste
    section from what those hotels share. Add them to `data/favourites.json`.
 4. Replace the example content in `data/preferences.md` with their answers and
@@ -161,18 +161,87 @@ included):
    air conditioning) on the property page.
 4. **Gym and sauna.** Check the gallery's gym photos for dumbbells, a rack or
    a barbell, and look for a sauna.
-5. **Reviews.** Read recent reviews on Booking.com (including the Wi-Fi
-   sub-score) and on the hotel's Google Maps listing. Look for deal-breakers
-   (noise from the street, nightlife, trains or thin walls; weak Wi-Fi;
-   broken air conditioning; building works) and hidden pluses (gym
-   equipment, sauna).
-6. **Journey times.** Get the time from the hotel to each target with the
+5. **Reviews and noise.** Run the noise screen below, which reads the 100
+   newest Booking.com reviews in full. Also skim the hotel's Google Maps
+   reviews, which catch problems Booking.com's prompts miss. Besides noise,
+   look for deal-breakers (weak Wi-Fi, with the Wi-Fi sub-score; broken air
+   conditioning; building works) and hidden pluses (gym equipment, sauna).
+6. **Building type.** Note whether the hotel is purpose-built (nearly all
+   chain and modern hotels) or a converted house or terrace (Georgian and
+   Victorian townhouses, common around Bloomsbury and King's Cross).
+   Purpose-built hotels usually insulate sound far better; conversions carry
+   noise through thin party walls, timber floors, old windows and shared
+   stairwells. The estimator below ignores building type, so treat a
+   conversion with few reviews as riskier than its number says, and at
+   similar noise results prefer the purpose-built hotel.
+7. **Journey times.** Get the time from the hotel to each target with the
    **find-route** skill, in the user's usual mode, never from Booking.com's
    "distance from centre" or an estimate.
 
 The step is done when every shortlisted hotel has a design grade, a desk
-verdict, a one-line review note citing what reviews said, and journey times,
-and every hotel these checks rule out has been dropped or flagged.
+verdict, a building type, a noise result, a one-line review note citing what
+reviews said, and journey times, and every hotel these checks rule out has
+been dropped or flagged.
+
+#### Noise screen
+
+Booking.com asks every guest what they disliked, so it surfaces noise
+complaints that guests elsewhere leave unsaid. Read reviews in full: a
+keyword search misses complaints worded in unexpected ways and reviews in
+other languages.
+
+1. **Fetch.** `scripts/booking-reviews.js` collects the newest reviews of
+   several hotels in one step, with no clicks, through the GraphQL query
+   Booking.com's own review list uses. Put the hotels' Booking.com paths in
+   the call on its last line, run the whole file with `javascript_tool` in a
+   tab on any booking.com page, then read the result with `get_page_text`
+   and `max_chars: 200000` (the default 50,000 holds only about three
+   hotels). About 60 of each hotel's 100 reviews have text; the rest are
+   only counted. The output ends with `# END: N hotels`; if that line is
+   missing, it was cut off. If a hotel's header says ERROR or the script
+   stops working, say so and read that hotel's reviews by hand.
+2. **Delegate the reading.** Ten hotels come to about 160,000 characters, so
+   keep them out of the lead context: give each subagent (Agent tool,
+   `model: "sonnet"`) two or three hotels and its own browser tab, to fetch,
+   read, label and estimate as below, returning per hotel the counts, the
+   estimator's output, the building type if the reviews reveal it, and
+   every complaint quoted in full with its date (translated where needed).
+   Without subagents, do the same in the lead.
+3. **Label.** Translate any review not in English. Write one row per review
+   with text to a CSV with columns `date` (YYYY-MM-DD) and `label`:
+   - **C**: complains of noise, or of sleep lost to it (street, nightlife,
+     neighbours, thin walls, plumbing, air conditioning, lifts, early
+     housekeeping), whether or not it disqualifies;
+   - **M**: noise audible but not bothersome;
+   - **Q**: says the room was quiet or the guest slept well;
+   - **N**: nothing about noise.
+
+   Note complaints tied to particular rooms ("street-facing rooms are loud",
+   "next to the lift"): they decide which room type to book and what to
+   request.
+4. **Disqualify.** Apply the hard disqualifiers in the preferences. Report
+   each complaint faithfully and at full strength: a guest who moved rooms
+   at 2 a.m. did not "find it a little noisy". Never weigh a "quiet" review
+   against a complaint.
+5. **Estimate.** For each hotel that passes, run:
+
+   ```sh
+   uv run -q --with numpy,pandas,scipy python -I scripts/noise_estimate.py scripts/params-booking.json REVIEWS.csv --threshold T
+   ```
+
+   with `T` from the preferences (default 7.5%). It prints the expected
+   complaint rate with its 90% range and the chance the true rate is above
+   the threshold. The estimator (version `booking-london-2026-10-18`) starts
+   each hotel near the London average of 7.4% of reviews with text and
+   updates on its complaints. The starting point counts for roughly as much
+   as 110 reviews, so a hotel with few reviews cannot look quiet, and 0
+   complaints in 60 reviews with text still leaves a 7% chance of being
+   above 7.5%. It was fitted on London hotels rated 8+, which are noisier
+   than most; elsewhere treat it as a rough guide and say so.
+6. **Flag.** Flag a hotel whose chance of being above the threshold is 50%
+   or more (at 7.5%, about 4 complaints in 40 reviews with text, 5 in 60 or
+   7 in 80). Flagged hotels stay in the table, labelled, and rank below
+   unflagged ones of similar merit; hard disqualifiers drop a hotel.
 
 ### Step 6: Cross-check the direct site
 
@@ -199,9 +268,14 @@ currency conversion offer, which carries a poor markup.
 
 Lead with a recommendation, then a table:
 
-| Hotel | Score (Comfort) | Design | Desk | Gym | Non-refundable | Flexible (cancel by) | Journey times | Review note |
-|---|---|---|---|---|---|---|---|---|
+| Hotel | Score (Comfort) | Design | Desk | Gym | Quiet | Non-refundable | Flexible (cancel by) | Journey times | Review note |
+|---|---|---|---|---|---|---|---|---|---|
 
+- **Quiet** gives building type, reviews with text read, complaints and the
+  chance above the threshold, for example "purpose-built · 58 read, 1
+  complaint · 12% > 7.5%"; add "FLAGGED" when it is 50% or more. List
+  hotels the noise screen dropped below the table, one line each with the
+  complaint that dropped them.
 - Put favourites in the same table, marked, so the user sees how the sweep
   compares.
 - Note the price band and area used, and anything ruled out for a reason the
@@ -215,7 +289,10 @@ plus a link to the direct-site page whenever it was cross-checked. Hotels not
 sold on Booking.com get their direct-site link and a note saying so.
 
 Then drive the chosen booking up to the payment step and hand off for the
-user to pay (see hard limits).
+user to pay (see hard limits). Choose the room type the reviews point to as
+quieter, and put a request in the special-requests field for a quiet room
+away from the street, lifts and bar (plus anything specific the reviews
+name, such as a high floor or courtyard side).
 
 ### Step 8: Record and grow the favourites
 
@@ -225,7 +302,13 @@ After the user confirms the booking:
    file): hotel, dates, room, rate type, price and reference.
 2. Offer to add the booked hotel, and any runner-up the user liked, to
    `data/favourites.json` for that city, so the next search there starts with
-   them. Add a verdict once the user has stayed.
+   them. Fill in its `quiet` field with the noise result (reviews with text
+   read, complaints, chance above the threshold, estimator version). Add a
+   verdict once the user has stayed.
+3. After the stay, ask whether noise disturbed the user's sleep and add the
+   answer to the `quiet` field. Once five or more stays have an answer,
+   compare them with the threshold: if hotels below it disturbed the user,
+   suggest lowering it; if flagged hotels were fine, suggest raising it.
 
 ## Related skills
 
