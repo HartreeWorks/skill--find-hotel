@@ -60,4 +60,6 @@ See [SKILL.md](./SKILL.md) for complete documentation and usage instructions.
 
 Created by [Peter Hartree](https://x.com/peterhartree) of [AI Wow](https://wow.pjh.is).
 
+Thanks to [Pablo Stafforini](https://stafforini.com) for feedback and contributions to the skill.
+
 Find more skills at [HartreeWorks/skills](https://github.com/HartreeWorks/skills).
